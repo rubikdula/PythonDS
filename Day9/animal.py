@@ -6,18 +6,18 @@ class Animal:
         print("Some generic animal sound")
     def description(self):
         return f"This is an animal named {self.name}."
-
-class Dog(Animal):
-    def __init__(self, name, breed):
-        super().__init__(name)
-        self.breed = breed
-
-    def sound(self):
-        print("Dog sound")
-
-    def description(self):
-        super().description()
-        return f"This is a {self.breed} dog named {self.name}."
+#
+# class Dog(Animal):
+#     def __init__(self, name, breed):
+#         super().__init__(name)
+#         self.breed = breed
+#
+#     def sound(self):
+#         print("Dog sound")
+#
+#     def description(self):
+#         super().description()
+#         return f"This is a {self.breed} dog named {self.name}."
 
 class Cat(Animal):
     def __init__(self, name, color):
