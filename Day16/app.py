@@ -12,5 +12,17 @@ def main():
     if st.checkbox("Show Raw Data"):
         st.write("Here is some raw data")
 
+    message = st.text_area("Enter your message")
+    choice = st.radio("Select your option", ["Option 1", "Option 2", "Option 3"])
+    st.write("You selected:", choice)
+    if st.button("Success"):
+        st.success("This is a success message!")
+
+    try:
+        1 / 0
+    except ZeroDivisionError as e:
+        st.error(f"An error occurred: {e}")
+
+
 if __name__ == '__main__':
     main()
