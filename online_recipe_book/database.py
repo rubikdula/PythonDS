@@ -1,8 +1,8 @@
 import sqlite3
 from typing import List, Optional
 
-from online_recipe_book.app import recipe
-from models/recipe import Recipe, RecipeCreate, Category, CategoryCreate
+from online_recipe_book.models.recipe import Recipe, RecipeCreate
+from online_recipe_book.models.category import Category, CategoryCreate
 
 DATABASE = 'recipes.db'
 
@@ -188,4 +188,3 @@ def delete_recipe(recipe_id: int) -> bool:
     return deleted > 0
 
 init_db()
-

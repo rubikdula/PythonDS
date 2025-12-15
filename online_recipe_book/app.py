@@ -6,7 +6,7 @@ import json
 API_URL = "http://127.0.0.1:8000"
 
 st.set_page_config(page_title="Recipe Router", layout="wide")
-st.title("🍳 Recipe Router")
+st.title("Recipe Router")
 st.markdown("Manage your recipes and categories with ease!")
 
 # Sidebar navigation
@@ -31,7 +31,7 @@ if page == "Home":
 
 # Recipes Page
 elif page == "Recipes":
-    st.header("📚 Recipes")
+    st.header("Recipes")
 
     # Tabs for different operations
     tab1, tab2, tab3, tab4, tab5 = st.tabs(["View All", "Create", "Update", "Delete", "Search"])
@@ -65,6 +65,14 @@ elif page == "Recipes":
     # Create Recipe
     with tab2:
         st.subheader("Create a New Recipe")
+
+        # Fetch categories for dropdown
+        categories_response = requests.get(f"{API_URL}/categories/")
+        category_options = {"None": None}
+        if categories_response.status_code == 200:
+            for cat in categories_response.json():
+                category_options[f"{cat['name']} (ID: {cat['id']})"] = cat['id']
+
         with st.form("create_recipe_form"):
             name = st.text_input("Recipe Name *")
             description = st.text_area("Description (optional)")
@@ -77,7 +85,8 @@ elif page == "Recipes":
             with col2:
                 difficulty = st.selectbox("Difficulty *", ["Easy", "Medium", "Hard"])
             with col3:
-                category_id = st.number_input("Category ID (optional)", value=0, step=1)
+                selected_category_label = st.selectbox("Category (optional)", list(category_options.keys()))
+                category_id = category_options[selected_category_label]
 
             submitted = st.form_submit_button("Create Recipe")
 
@@ -91,7 +100,7 @@ elif page == "Recipes":
                             "instructions": instructions,
                             "cuisine": cuisine,
                             "difficulty": difficulty,
-                            "category_id": category_id if category_id > 0 else None
+                            "category_id": category_id
                         }
                         response = requests.post(f"{API_URL}/recipes/", json=recipe_data)
                         if response.status_code == 200:
@@ -119,6 +128,18 @@ elif page == "Recipes":
                 # Get current recipe details
                 current_recipe = next(r for r in recipes if r['id'] == recipe_id)
 
+                # Fetch categories for dropdown
+                categories_response = requests.get(f"{API_URL}/categories/")
+                category_options = {"None": None}
+                current_cat_index = 0
+                if categories_response.status_code == 200:
+                    cats = categories_response.json()
+                    for idx, cat in enumerate(cats):
+                        label = f"{cat['name']} (ID: {cat['id']})"
+                        category_options[label] = cat['id']
+                        if current_recipe['category_id'] == cat['id']:
+                            current_cat_index = idx + 1 # +1 because of "None" at index 0
+
                 with st.form("update_recipe_form"):
                     name = st.text_input("Recipe Name", value=current_recipe['name'])
                     description = st.text_area("Description", value=current_recipe['description'] or "")
@@ -132,7 +153,8 @@ elif page == "Recipes":
                         difficulty = st.selectbox("Difficulty", ["Easy", "Medium", "Hard"],
                                                   index=["Easy", "Medium", "Hard"].index(current_recipe['difficulty']))
                     with col3:
-                        category_id = st.number_input("Category ID", value=current_recipe['category_id'] or 0, step=1)
+                        selected_category_label = st.selectbox("Category", list(category_options.keys()), index=current_cat_index)
+                        category_id = category_options[selected_category_label]
 
                     submitted = st.form_submit_button("Update Recipe")
 
@@ -145,7 +167,7 @@ elif page == "Recipes":
                                 "instructions": instructions,
                                 "cuisine": cuisine,
                                 "difficulty": difficulty,
-                                "category_id": category_id if category_id > 0 else None
+                                "category_id": category_id
                             }
                             response = requests.put(f"{API_URL}/recipes/{recipe_id}", json=recipe_data)
                             if response.status_code == 200:
@@ -226,7 +248,7 @@ elif page == "Recipes":
 
 # Categories Page
 elif page == "Categories":
-    st.header("🏷️ Categories")
+    st.header("Categories")
 
     # Tabs for different operations
     tab1, tab2, tab3, tab4 = st.tabs(["View All", "Create", "Update", "Delete"])
@@ -333,4 +355,3 @@ elif page == "Categories":
                 st.info("No categories available to delete")
         except Exception as e:
             st.error(f"Error loading categories: {str(e)}")
-
