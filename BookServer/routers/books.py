@@ -72,3 +72,18 @@ def update_book(book_id: int, book: BookCreate, _: str = Depends(get_api_key)):
     conn.commit()
     conn.close()
     return Book(id=book_id,*book.dict())
+
+
+@router.delete("/{book_id}", response_model=Book)
+def delete_book(book_id: int, _: str = Depends(get_api_key)):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("DELETE FROM books WHERE id =?", (book_id,))
+    if cursor.rowcount == 0:
+        conn.close()
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Book with id '{book_id}' not found.")
+    conn.commit()
+    conn.close()
+    return {"detail": f"Book with id '{book_id}' deleted successfully."}
