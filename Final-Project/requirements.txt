@@ -6,3 +6,10 @@ sqlalchemy
 pydantic
 pandas
 plotly
+textblob
+nltk
+beautifulsoup4
+lxml
+feedparser
+wordcloud
+matplotlib
